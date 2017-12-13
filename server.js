@@ -29,8 +29,10 @@ app.use(expressValidator());
 // Routers and modules
 const { DATABASE_URL, PORT } = require('./config');
 const alertRouter = require('./routes/alertRouter');
+const priceRouter = require('./routes/priceRouter');
 
 app.use('/api/alerts', alertRouter);
+app.use('/api/price', priceRouter);
 
 // Initializing Server
 let server;
