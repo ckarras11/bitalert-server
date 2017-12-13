@@ -1,16 +1,17 @@
 const mongoose = require('mongoose');
 
 const priceSchema = mongoose.Schema({
-    marketPrice: [{
-        price: { type: Number, required: true },
-        timestamp: { type: Number, required: true },
-    }],
+
+    price: { type: Number, required: true },
+    timestamp: { type: Date, required: true },
+
 });
 
 priceSchema.methods.apiRepr = function () {
     return {
         id: this.id,
-        marketPrice: this.marketPrice,
+        price: this.price,
+        timestamp: this.timestamp,
     };
 };
 
