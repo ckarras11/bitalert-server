@@ -21,13 +21,36 @@ router.get('/', (req, res) => {
 });
 
 // Create a new Alert
-router.post('/', (req, res) => {
-    
+// check for price in alert obj
+router.post('/', jsonParser, (req, res) => {
+    const requiredFields = ['phoneNumber', 'alert'];
+    for (let i = 0; i < requiredFields.length; i++) {
+        const field = requiredFields[i];
+        if (!(field in req.body)) {
+            const message = `Missing ${field} in request body`;
+            console.error(message);
+            return res.status(400).send(message);
+        }
+    }
+    Alert
+        .create({
+            phoneNumber: req.body.phoneNumber,
+            alert: req.body.alert,
+        })
+        .then(alert => res.status(201).json(alert.apiRepr()))
+        .catch((err) => {
+            res.status(500).json({ error: 'Something went wrong' });
+        });
 });
 
 // Delete an Alert
-router.delete('/', (req, res) => {
-
+router.delete('/:id', (req, res) => {
+    Alert
+        .findByIdAndRemove(req.params.id)
+        .then(() => {
+            console.log(`Deleting alert ${req.params.id}`);
+            res.status(204).end();
+        });
 });
 
 module.exports = router;
