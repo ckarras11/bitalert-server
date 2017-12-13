@@ -1,46 +1,74 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const express = require('express');
+const morgan = require('morgan');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const expressValidator = require('express-validator');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+// Initializing app
+const app = express();
+mongoose.Promise = global.Promise;
 
-var app = express();
+// Config Files
+const { SECRET } = require('./config');
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+// Morgan logging middleware
+app.use(morgan('common'));
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
+// Bodyparser Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/users', users);
+// Express Validator
+const { check, validationResult } = require('express-validator/check');
+const { matchedData, sanitize } = require('express-validator/filter');
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+app.use(expressValidator());
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+// Routers and modules
+const { DATABASE_URL, PORT } = require('./config');
+const alertRouter = require('./routes/alertRouter');
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+app.use('/api/alerts', alertRouter);
 
-module.exports = app;
+// Initializing Server
+let server;
+
+function runServer(databaseUrl = DATABASE_URL, port = PORT) {
+  return new Promise((resolve, reject) => {
+    mongoose.connect(databaseUrl, (err) => {
+      if (err) {
+        return reject(err);
+      }
+      server = app.listen(port, () => {
+        console.log(`Your app is listening on port ${port}`);
+        resolve();
+      })
+        .on('error', (err) => {
+          mongoose.disconnect();
+          reject(err);
+        });
+    });
+  });
+}
+
+function closeServer() {
+  return mongoose.disconnect().then(() => {
+    return new Promise((resolve, reject) => {
+      console.log('Closing server');
+      server.close((err) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+  });
+}
+
+if (require.main === module) {
+  runServer().catch(err => console.error(err));
+}
+
+module.exports = { app, runServer, closeServer };
