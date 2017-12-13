@@ -64,27 +64,29 @@ describe('Testing api/alerts', function () {
                     res.body.length.should.equal(count);
                 });
         });
-        /* it('should retrieve vehicles with the correct keys', function () {
-            let resPrice;
+        it('should retrieve alerts with the correct keys', function () {
+            let resAlert;
             return chai.request(app)
-                .get('/api/price')
+                .get('/api/alerts')
                 .then(function (res) {
                     res.should.have.status(200);
                     res.should.be.json;
                     res.body.should.be.a('array');
-                    res.body.forEach(function (price) {
-                        price.should.be.a('object');
-                        price.should.include.keys('price', 'timestamp');
+                    res.body.forEach(function (alert) {
+                        alert.should.be.a('object');
+                        alert.should.include.keys('phoneNumber', 'alert');
+                        alert.alert.should.be.a('object');
+                        alert.alert.should.include.keys('price');
                     });
-                    resPrice = res.body[0];
-                    return Price.findById(resPrice.id);
+                    resAlert = res.body[0];
+                    return Alert.findById(resAlert.id);
                 })
-                .then(function (price) {
-                    resPrice.id.should.equal(price.id);
-                    resPrice.price.should.equal(price.price);
-                    //resPrice.timestamp.should.equal(price.timestamp);
+                .then(function (alert) {
+                    resAlert.id.should.equal(alert.id);
+                    resAlert.phoneNumber.should.equal(alert.phoneNumber);
+                    resAlert.alert.price.should.equal(alert.alert.price);
                 });
-        }); */
+        });
     });
 });
 
