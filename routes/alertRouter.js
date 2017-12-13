@@ -22,7 +22,7 @@ router.get('/', (req, res) => {
 
 // Create a new Alert
 router.post('/', (req, res) => {
-
+    
 });
 
 // Delete an Alert
