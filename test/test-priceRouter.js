@@ -48,7 +48,7 @@ describe('Testing api/price', function () {
         return closeServer();
     });
 
-    describe('GET api/price', function () {
+    describe('GET /api/price', function () {
         it('should retrieve all the prices from the db', function () {
             let res;
             return chai.request(app)
@@ -81,6 +81,46 @@ describe('Testing api/price', function () {
                     resPrice.id.should.equal(price.id);
                     resPrice.price.should.equal(price.price);
                     //resPrice.timestamp.should.equal(price.timestamp);
+                });
+        });
+    });
+
+    describe('POST /api/price', function () {
+        it('should create a new alert', function () {
+            const newPrice = generateData();
+            return chai.request(app)
+            .post('/api/price')
+            .send(newPrice)
+            .then(function (res) {
+                res.should.have.status(201);
+                res.should.be.json;
+                res.body.should.be.a('object');
+                res.body.should.include.keys('price', 'timestamp');
+                res.body.id.should.not.be.null;
+                return Price.findById(res.body.id);
+            })
+            .then(function (price) {
+                price.price.should.equal(newPrice.price);
+                //price.timestamp.should.equal(newPrice.timestamp);
+            });
+        });
+    });
+
+    describe('DELETE /api/price', function () {
+        it('should remove an alert form the db', function () {
+            let resPrice;
+            return Price
+                .findOne()
+                .then(function (_price) {
+                    resPrice = _price;
+                    return chai.request(app).delete(`/api/price/${resPrice.id}`);
+                })
+                .then(function (res) {
+                    res.should.have.status(204);
+                    return Price.findById(resPrice.id);
+                })
+                .then(function (_price) {
+                    should.not.exist(_price);
                 });
         });
     });

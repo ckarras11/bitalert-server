@@ -19,6 +19,7 @@ router.get('/', (req, res) => {
             res.status(500).json({ error: 'Something went wrong' });
         });
 });
+
 // Add a Price to the DB
 router.post('/', jsonParser, (req, res) => {
     const requiredFields = ['price', 'timestamp'];
