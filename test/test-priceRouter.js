@@ -80,7 +80,7 @@ describe('Testing api/price', function () {
                 .then(function (price) {
                     resPrice.id.should.equal(price.id);
                     resPrice.price.should.equal(price.price);
-                    //resPrice.timestamp.should.equal(price.timestamp);
+                    resPrice.timestamp.should.equal(price.timestamp.toISOString());
                 });
         });
     });
