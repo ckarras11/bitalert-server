@@ -23,16 +23,26 @@ router.get('/', (req, res) => {
 // Create a new Alert
 // check for price in alert obj
 router.post('/', jsonParser, (req, res) => {
-    const requiredFields = ['phoneNumber', 'alert'];
-    for (let i = 0; i < requiredFields.length; i++) {
-        const field = requiredFields[i];
-        if (!(field in req.body)) {
-            const message = `Missing ${field} in request body`;
-            console.error(message);
-            return res.status(400).send(message);
-        }
+    if (!req.body.hasOwnProperty('phoneNumber')) {
+        let message = 'Missing phoneNumber in request body';
+        console.error(message);
+        return res.status(400).send(message);
     }
-    Alert
+
+    if (!req.body.hasOwnProperty('alert')) {
+        let message = 'Missing alert in request body';
+        console.error(message);
+        return res.status(400).send(message);
+    }
+    const { alert } = req.body;
+    if (!alert.hasOwnProperty('price') || !alert.hasOwnProperty('isAbove')) {
+        let message = 'Missing key in alert body';
+        console.error(message);
+        return res.status(400).send(message);
+    }
+    
+
+    return Alert
         .create({
             phoneNumber: req.body.phoneNumber,
             alert: req.body.alert,
@@ -45,7 +55,7 @@ router.post('/', jsonParser, (req, res) => {
 
 // Delete an Alert
 router.delete('/:id', (req, res) => {
-    Alert
+    return Alert
         .findByIdAndRemove(req.params.id)
         .then(() => {
             console.log(`Deleting alert ${req.params.id}`);
