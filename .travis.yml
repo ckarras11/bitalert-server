@@ -2,3 +2,10 @@ language: node_js
 node_js: node
 services:
 - mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: qplwYG9IAlgdp97J19mqR923vXwUc/3iZ2x4dgJfgJnm9v6faVtDPP0Y8ZSehG1OtvEtxfGlGAfSQ6INxB1qL9rGEEAM+Cl5SgRtI+jMF+hXf+3ez7lZT4svvxppxKgpr40h+Yutg8Y5tBZaRGmUvJBE3OforXtr/sBAzRx6bH9ZnQhAWA/Y9YnFkiilB6wk6p05GDjrZaKdiJwMa0U6yZ5m8pPtyP12hht3nOnybffN0QOeO7QqEmNSxRQPHJCSqvU1+QPWBxVixQvpdkKyEMFUo82zf/TwUhFufOwmaM2r/jG/RMZvInVtYfpY92gBtMoKuOLTbZD7m3WnNcysoJo3ZKAeE/KZlPB6igjtxa6E/FC7p1cN+D+BAt14o3eEFSlIldAB4Ry1gBzqMy8n88SphvURxeHdQjeJ80zc/9mae2RSi3FFgXW6VF8x15IDXOCJg9XCPxSLGtmAnFBJNdlOO5Xq1XLr73uheBiKnQu8Udf2gX76Xkbpuv0makoAfjyn/w1LwiAbJEwNrLw+VNVO9V/l93rfV8Z/Tdnd3g6bMRClVgtmOibcwTtU20BS4vrdseQ1p6BhgeX4G4CHF6PpUXG8FdBKeZawK7ps6zELLPbriX4zKBhwDqb1JrVFZICtFfFoy4iK6BridogXgpJiGaIppRTrJ1H/8PSrle8=
+  app: bitalert-server
+  on:
+    repo: ckarras11/bitalert-server
