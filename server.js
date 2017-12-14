@@ -16,7 +16,7 @@ const { CLIENT_ORIGIN } = require('./config');
 
 app.use(
   cors({
-    origin: CLIENT_ORIGIN
+    origin: CLIENT_ORIGIN,
   }),
 );
 
