@@ -31,7 +31,7 @@ router.post('/', jsonParser, (req, res) => {
             return res.status(400).send(message);
         }
     }
-    Price
+    return Price
         .create({
             price: req.body.price,
             timestamp: req.body.timestamp,
@@ -44,7 +44,7 @@ router.post('/', jsonParser, (req, res) => {
 
 // Remove Prices from DB
 router.delete('/:id', (req, res) => {
-    Price
+    return Price
         .findByIdAndRemove(req.params.id)
         .then(() => {
             console.log(`Deleting alert ${req.params.id}`);
