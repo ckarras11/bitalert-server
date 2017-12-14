@@ -33,7 +33,7 @@ function tearDown() {
     return mongoose.connection.dropDatabase();
 }
 
-describe('Testing api/alerts', function () {
+describe('Testing /api/alerts', function () {
     before(function () {
         return runServer(TEST_DATABASE_URL);
     });
@@ -50,7 +50,7 @@ describe('Testing api/alerts', function () {
         return closeServer();
     });
 
-    describe('GET api/alerts', function () {
+    describe('GET /api/alerts', function () {
         it('should retrieve all the alerts from the db', function () {
             let res;
             return chai.request(app)
@@ -85,6 +85,45 @@ describe('Testing api/alerts', function () {
                     resAlert.id.should.equal(alert.id);
                     resAlert.phoneNumber.should.equal(alert.phoneNumber);
                     resAlert.alert.price.should.equal(alert.alert.price);
+                });
+        });
+    });
+
+    describe('POST /api/alerts', function () {
+        it('should create a new alert', function () {
+            const newAlert = generateData();
+            return chai.request(app)
+            .post('/api/alerts')
+            .send(newAlert)
+            .then(function (res) {
+                res.should.have.status(201);
+                res.should.be.json;
+                res.body.should.be.a('object');
+                res.body.should.include.keys('phoneNumber', 'alert');
+                res.body.id.should.not.be.null;
+                return Alert.findById(res.body.id);
+            })
+            .then(function (alert) {
+                alert.phoneNumber.should.equal(newAlert.phoneNumber);
+            });
+        });
+    });
+
+    describe('DELETE /api/alerts', function () {
+        it('should remove an alert form the db', function () {
+            let resAlert;
+            return Alert
+                .findOne()
+                .then(function (_alert) {
+                    resAlert = _alert;
+                    return chai.request(app).delete(`/api/alerts/${resAlert.id}`);
+                })
+                .then(function (res) {
+                    res.should.have.status(204);
+                    return Alert.findById(resAlert.id);
+                })
+                .then(function (_alert) {
+                    should.not.exist(_alert);
                 });
         });
     });
