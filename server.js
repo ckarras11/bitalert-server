@@ -4,10 +4,21 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const expressValidator = require('express-validator');
+const cors = require('cors');
+
 
 // Initializing app
 const app = express();
 mongoose.Promise = global.Promise;
+
+// Initializing CORS
+const { CLIENT_ORIGIN } = require('./config');
+
+app.use(
+  cors({
+    origin: CLIENT_ORIGIN
+  }),
+);
 
 // Config Files
 const { SECRET } = require('./config');

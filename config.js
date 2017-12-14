@@ -11,3 +11,5 @@ exports.PORT = process.env.PORT || 8080;
 exports.CODE = process.env.CODE;
 
 exports.SECRET = process.env.SECRET || 'keyboard cat';
+
+exports.CLIENT_ORIGIN = process.env.CLIENT_ORIGIN;
