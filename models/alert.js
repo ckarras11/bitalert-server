@@ -4,6 +4,7 @@ const alertSchema = mongoose.Schema({
     phoneNumber: { type: String, required: true },
     alert: {
         price: { type: Number, required: true },
+        isAbove: { type: Boolean, required: true },
     },
 
 });
