@@ -15,6 +15,7 @@ function generateData() {
         phoneNumber: faker.phone.phoneNumberFormat(),
         alert: {
             price: faker.random.number(),
+            isAbove: faker.random.boolean(),
         },
     };
 }
@@ -100,6 +101,7 @@ describe('Testing /api/alerts', function () {
                 res.should.be.json;
                 res.body.should.be.a('object');
                 res.body.should.include.keys('phoneNumber', 'alert');
+                res.body.alert.should.include.keys('price', 'isAbove');
                 res.body.id.should.not.be.null;
                 return Alert.findById(res.body.id);
             })
