@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node server.js cron.js",
+    "start": "node server.js",
     "test": "mocha --exit",
     "cron": "node cron.js"
   },
