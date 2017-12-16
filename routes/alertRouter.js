@@ -9,7 +9,7 @@ const jsonParser = bodyParser.json();
 
 // Get Alerts by phonenumber from DB
 router.get('/', (req, res) => {
-    Alert
+    return Alert
         .find()
         .then((alerts) => {
             res.status(200).json(alerts.map(alert => alert.apiRepr()));
@@ -21,7 +21,6 @@ router.get('/', (req, res) => {
 });
 
 // Create a new Alert
-// check for price in alert obj
 router.post('/', jsonParser, (req, res) => {
     if (!req.body.hasOwnProperty('phoneNumber')) {
         let message = 'Missing phoneNumber in request body';
@@ -35,7 +34,7 @@ router.post('/', jsonParser, (req, res) => {
         return res.status(400).send(message);
     }
     const { alert } = req.body;
-    if (!alert.hasOwnProperty('price') || !alert.hasOwnProperty('isAbove')) {
+    if (!alert.hasOwnProperty('price') || !alert.hasOwnProperty('removeFlag') || !alert.hasOwnProperty('created')) {
         let message = 'Missing key in alert body';
         console.error(message);
         return res.status(400).send(message);

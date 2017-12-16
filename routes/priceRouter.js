@@ -9,7 +9,7 @@ const jsonParser = bodyParser.json();
 
 // Get Price from DB
 router.get('/', (req, res) => {
-    Price
+    return Price
         .find()
         .then((prices) => {
             res.status(200).json(prices.map(price => price.apiRepr()));
