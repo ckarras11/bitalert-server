@@ -10,6 +10,10 @@ exports.PORT = process.env.PORT || 8080;
 
 exports.CODE = process.env.CODE;
 
+exports.ACCOUNT_SID = process.env.ACCOUNT_SID;
+
+exports.AUTH_TOKEN = process.env.AUTH_TOKEN;
+
 exports.SECRET = process.env.SECRET || 'keyboard cat';
 
 exports.CLIENT_ORIGIN = process.env.CLIENT_ORIGIN;
