@@ -4,7 +4,8 @@ const alertSchema = mongoose.Schema({
     phoneNumber: { type: String, required: true },
     alert: {
         price: { type: Number, required: true },
-        isAbove: { type: Boolean, required: true },
+        removeFlag: { type: Boolean, required: true },
+        created: { type: Date, required: true },
     },
 
 });
@@ -15,6 +16,10 @@ alertSchema.methods.apiRepr = function () {
         phoneNumber: this.phoneNumber,
         alert: this.alert,
     };
+};
+
+alertSchema.statics.findByFlag = function (flag) {
+    return this.find({ 'alert.removeFlag': flag });
 };
 
 const Alert = mongoose.model('Alert', alertSchema, 'Alert');
