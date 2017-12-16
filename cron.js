@@ -9,10 +9,10 @@ mongoose.Promise = global.Promise;
 mongoose.connect(DATABASE_URL);
 
 // Twilio
-const twilio = require('twilio');
+/* const twilio = require('twilio');
 const accountSid = ACCOUNT_SID;
 const authToken = AUTH_TOKEN;
-const client = new twilio(accountSid, authToken);
+const client = new twilio(accountSid, authToken); */
 
 // Fill the database with current market prices every minute
 const job1 = new CronJob({
@@ -35,7 +35,7 @@ const job1 = new CronJob({
     },
     start: false,
 });
-
+/* 
 // Clear the database each day at midnight
 const job2 = new CronJob({
     cronTime: '0 0 * * * *',
@@ -135,7 +135,7 @@ const job5 = new CronJob({
             });
     },
     start: false,
-});
+}); */
 
 job1.start();
 // job2.start();
