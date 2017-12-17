@@ -16,4 +16,4 @@ exports.AUTH_TOKEN = process.env.AUTH_TOKEN;
 
 exports.SECRET = process.env.SECRET || 'keyboard cat';
 
-exports.CLIENT_ORIGIN = process.env.CLIENT_ORIGIN;
+exports.CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:3000';
