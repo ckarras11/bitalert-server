@@ -7,7 +7,7 @@ const router = express.Router();
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 const jsonParser = bodyParser.json();
 
-// Get Alerts by phonenumber from DB
+// Get all Alerts from DB
 router.get('/', (req, res) => {
     return Alert
         .find()
@@ -20,6 +20,20 @@ router.get('/', (req, res) => {
         });
 });
 
+// Get Alerts by phone Number
+router.get('/:phoneNumber', (req, res) => {
+    const number = req.params.phoneNumber.replace(/\D/g,'');
+    console.log(number);
+    return Alert
+        .find({ phoneNumber: number})
+        .then((alerts) => {
+            res.status(200).json(alerts.map(alert => alert.apiRepr()));
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).json({ error: 'Something went wrong' });
+        });
+});
 // Create a new Alert
 router.post('/', jsonParser, (req, res) => {
     if (!req.body.hasOwnProperty('phoneNumber')) {
@@ -34,7 +48,7 @@ router.post('/', jsonParser, (req, res) => {
         return res.status(400).send(message);
     }
     const { alert } = req.body;
-    if (!alert.hasOwnProperty('price') || !alert.hasOwnProperty('removeFlag') || !alert.hasOwnProperty('created')) {
+    if (!alert.hasOwnProperty('price')) {
         let message = 'Missing key in alert body';
         console.error(message);
         return res.status(400).send(message);
@@ -44,7 +58,11 @@ router.post('/', jsonParser, (req, res) => {
     return Alert
         .create({
             phoneNumber: req.body.phoneNumber,
-            alert: req.body.alert,
+            alert: {
+                price: req.body.alert.price,
+                removeFlag: false,
+                created: new Date(),
+            },
         })
         .then(alert => res.status(201).json(alert.apiRepr()))
         .catch((err) => {
