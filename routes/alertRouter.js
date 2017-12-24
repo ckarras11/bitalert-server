@@ -8,7 +8,7 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false });
 const jsonParser = bodyParser.json();
 
 // Get all Alerts from DB
-router.get('/', (req, res) => {
+/* router.get('/', (req, res) => {
     return Alert
         .find()
         .then((alerts) => {
@@ -18,7 +18,7 @@ router.get('/', (req, res) => {
             console.error(err);
             res.status(500).json({ error: 'Something went wrong' });
         });
-});
+}); */
 
 // Get Alerts by phone Number
 router.get('/:phoneNumber', (req, res) => {

@@ -52,7 +52,7 @@ describe('Testing /api/alerts', function () {
         return closeServer();
     });
 
-    describe('GET /api/alerts', function () {
+    /* describe('GET /api/alerts', function () {
         it('should retrieve all the alerts from the db', function () {
             let res;
             return chai.request(app)
@@ -89,7 +89,7 @@ describe('Testing /api/alerts', function () {
                     resAlert.alert.price.should.equal(alert.alert.price);
                 });
         });
-    });
+    }); */
 
     describe('POST /api/alerts', function () {
         it('should create a new alert', function () {
