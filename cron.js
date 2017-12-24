@@ -8,6 +8,7 @@ const { DATABASE_URL, ACCOUNT_SID, AUTH_TOKEN } = require('./config');
 mongoose.Promise = global.Promise;
 mongoose.connect(DATABASE_URL);
 
+// nodemailer
 // Twilio
 const twilio = require('twilio');
 const accountSid = ACCOUNT_SID;
@@ -38,7 +39,7 @@ const job1 = new CronJob({
 
 // Clear the database each day at midnight
 const job2 = new CronJob({
-    cronTime: '0 0 * * * *',
+    cronTime: '0 0 0 * * *',
     onTick() {
         return Price
             .find()
@@ -60,9 +61,9 @@ const job2 = new CronJob({
     start: false,
 });
 
-// Flag alert for deletion if its over 24hours old every minute
+// Flag alert for deletion if its over 24hours old every hour
 const job3 = new CronJob({
-    cronTime: '1 * * * * *',
+    cronTime: '0 0 * * * *',
     onTick() {
         let currentDate = new Date();
         let expiration = 60 * 60 * 1000 * 24;
@@ -126,7 +127,7 @@ const job4 = new CronJob({
 
 // Removes alerts with flag true every day at midnight
 const job5 = new CronJob({
-    cronTime: '0 0 * * * *',
+    cronTime: '0 0 0 * * *',
     onTick() {
         return Alert
             .deleteMany({ 'alert.removeFlag': true })
