@@ -17,7 +17,7 @@ const client = new twilio(accountSid, authToken);
 
 // Fill the database with current market prices every minute
 const job1 = new CronJob({
-    cronTime: '1 * * * * *',
+    cronTime: '5 * * * * *',
     onTick() {
         request('https://www.bitstamp.net/api/v2/ticker/btcusd/', { json: true }, (err, res, body) => {
 
@@ -39,12 +39,12 @@ const job1 = new CronJob({
 
 // Clear the database each day at midnight
 const job2 = new CronJob({
-    cronTime: '0 0 0 * * *',
+    cronTime: '10 0 0 * * *',
     onTick() {
         return Price
             .find()
             .then((res) => {
-                if (res.length > 1440) {
+                if (res.length > 1000) {
                     console.log('deleting');
                     return Price;
                 }
@@ -90,7 +90,7 @@ const job3 = new CronJob({
 
 // Checks alert price and compare with current price every minute
 const job4 = new CronJob({
-    cronTime: '1 * * * * *',
+    cronTime: '15 * * * * *',
     onTick() {
         let marketPrice;
         Price
@@ -98,27 +98,29 @@ const job4 = new CronJob({
             .then((res) => {
                 marketPrice = res[res.length - 1].price;
                 console.log(marketPrice);
-            });
-        Alert
-            .findByFlag(false)
-            .then((res) => {
-                res.forEach((alert) => {
-                    if (alert.alert.price > marketPrice) {
-                        console.log(alert);
-                        // SMS via Twilio
-                        client.messages.create({
-                            body: `Your alert price of ${alert.alert.price} was triggered!`,
-                            to: alert.phoneNumber,  // Text this number
-                            from: '+17742373189' // From a valid Twilio number
-                        })
-                        .then(message => console.log(message.sid));
-                        return Alert
-                            .update({ _id: alert._id }, { $set: { 'alert.removeFlag': true } })
-                            .exec()
-                            .then(() => {
-                                console.log('Triggered alerts flagged for deletion');
-                            });
-                    }
+            })
+            .then(() => {
+                Alert
+                .findByFlag(false)
+                .then((res) => {
+                    res.forEach((alert) => {
+                        if (alert.alert.price > marketPrice) {
+                            console.log(alert);
+                            // SMS via Twilio
+                            client.messages.create({
+                                body: `Your alert price of ${alert.alert.price} was triggered!`,
+                                to: alert.phoneNumber,  // Text this number
+                                from: '+17742373189' // From a valid Twilio number
+                            })
+                            .then(message => console.log(message.sid));
+                            return Alert
+                                .update({ _id: alert._id }, { $set: { 'alert.removeFlag': true } })
+                                .exec()
+                                .then(() => {
+                                    console.log('Triggered alerts flagged for deletion');
+                                });
+                        }
+                    });
                 });
             });
     },
@@ -127,7 +129,7 @@ const job4 = new CronJob({
 
 // Removes alerts with flag true every day at midnight
 const job5 = new CronJob({
-    cronTime: '0 0 0 * * *',
+    cronTime: '10 0 0 * * *',
     onTick() {
         return Alert
             .deleteMany({ 'alert.removeFlag': true })
