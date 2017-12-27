@@ -7,19 +7,6 @@ const router = express.Router();
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 const jsonParser = bodyParser.json();
 
-// Get all Alerts from DB
-/* router.get('/', (req, res) => {
-    return Alert
-        .find()
-        .then((alerts) => {
-            res.status(200).json(alerts.map(alert => alert.apiRepr()));
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(500).json({ error: 'Something went wrong' });
-        });
-}); */
-
 // Get Alerts by phone Number
 router.get('/:phoneNumber', (req, res) => {
     const number = req.params.phoneNumber.replace(/\D/g,'');
@@ -53,7 +40,6 @@ router.post('/', jsonParser, (req, res) => {
         console.error(message);
         return res.status(400).send(message);
     }
-    
 
     return Alert
         .create({

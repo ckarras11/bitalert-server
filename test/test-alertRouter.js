@@ -52,24 +52,15 @@ describe('Testing /api/alerts', function () {
         return closeServer();
     });
 
-    /* describe('GET /api/alerts', function () {
-        it('should retrieve all the alerts from the db', function () {
-            let res;
-            return chai.request(app)
-                .get('/api/alerts')
-                .then(function (_res) {
-                    res = _res;
-                    res.should.have.status(200);
-                    return Alert.count();
-                })
-                .then(function (count) {
-                    res.body.length.should.equal(count);
-                });
-        });
-        it('should retrieve alerts with the correct keys', function () {
+    describe('GET /api/alerts/:phoneNumber', function () {
+        it('should retrieve all the alerts from the db for a particular number', function () {
             let resAlert;
-            return chai.request(app)
-                .get('/api/alerts')
+            return Alert
+                .findOne()
+                .then(function (res) {
+                    resAlert = res;
+                    return chai.request(app).get(`/api/alerts/${resAlert.phoneNumber}`);
+                })
                 .then(function (res) {
                     res.should.have.status(200);
                     res.should.be.json;
@@ -78,18 +69,11 @@ describe('Testing /api/alerts', function () {
                         alert.should.be.a('object');
                         alert.should.include.keys('phoneNumber', 'alert');
                         alert.alert.should.be.a('object');
-                        alert.alert.should.include.keys('price');
+                        alert.alert.should.include.keys('price', 'created', 'removeFlag');
                     });
-                    resAlert = res.body[0];
-                    return Alert.findById(resAlert.id);
-                })
-                .then(function (alert) {
-                    resAlert.id.should.equal(alert.id);
-                    resAlert.phoneNumber.should.equal(alert.phoneNumber);
-                    resAlert.alert.price.should.equal(alert.alert.price);
                 });
         });
-    }); */
+    });
 
     describe('POST /api/alerts', function () {
         it('should create a new alert', function () {
