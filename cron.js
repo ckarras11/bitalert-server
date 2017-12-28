@@ -108,7 +108,7 @@ const job4 = new CronJob({
                             console.log(alert);
                             // SMS via Twilio
                             client.messages.create({
-                                body: `Your alert price of ${alert.alert.price} was triggered!`,
+                                body: `BitAlert - Your alert price of ${alert.alert.price} was triggered!`,
                                 to: alert.phoneNumber,  // Text this number
                                 from: '+17742373189' // From a valid Twilio number
                             })
