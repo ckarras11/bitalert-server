@@ -9,10 +9,10 @@ const jsonParser = bodyParser.json();
 
 // Get Alerts by phone Number
 router.get('/:phoneNumber', (req, res) => {
-    const number = req.params.phoneNumber.replace(/\D/g,'');
+    const number = req.params.phoneNumber.replace(/\D/g, '');
     console.log(number);
     return Alert
-        .find({ phoneNumber: number})
+        .find({ phoneNumber: number })
         .then((alerts) => {
             res.status(200).json(alerts.map(alert => alert.apiRepr()));
         })
