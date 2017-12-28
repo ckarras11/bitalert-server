@@ -8,7 +8,7 @@ const { DATABASE_URL, ACCOUNT_SID, AUTH_TOKEN } = require('./config');
 mongoose.Promise = global.Promise;
 mongoose.connect(DATABASE_URL);
 
-// nodemailer
+
 // Twilio
 const twilio = require('twilio');
 const accountSid = ACCOUNT_SID;
