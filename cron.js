@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 const { Price } = require('./models/price');
 const { Alert } = require('./models/alert');
-const { DATABASE_URL, ACCOUNT_SID, AUTH_TOKEN } = require('./config');
+const { DATABASE_URL, ACCOUNT_SID, AUTH_TOKEN, EMAIL_USER, EMAIL_PASS } = require('./config');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(DATABASE_URL);
@@ -20,8 +20,8 @@ const client = new twilio(accountSid, authToken);
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'bitalert.notifications@gmail.com',
-        pass: 'bitalertapp',
+        user: EMAIL_USER,
+        pass: EMAIL_PASS,
     },
 });
 

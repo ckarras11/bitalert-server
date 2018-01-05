@@ -14,6 +14,10 @@ exports.ACCOUNT_SID = process.env.ACCOUNT_SID;
 
 exports.AUTH_TOKEN = process.env.AUTH_TOKEN;
 
+exports.EMAIL_USER = process.env.EMAIL_USER;
+
+exports.EMAIL_PASS = process.env.EMAIL_PASS;
+
 exports.SECRET = process.env.SECRET || 'keyboard cat';
 
 exports.CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:3000';
