@@ -13,7 +13,9 @@ chai.use(chaiHttp);
 function generateData() {
     return {
         phoneNumber: faker.phone.phoneNumberFormat(),
+        email: faker.internet.email(),
         alert: {
+            contactType: 'phoneNumber',
             price: faker.random.number(),
             removeFlag: faker.random.boolean(),
             created: faker.date.recent(),
@@ -52,14 +54,14 @@ describe('Testing /api/alerts', function () {
         return closeServer();
     });
 
-    describe('GET /api/alerts/:phoneNumber', function () {
+    describe('GET /api/alerts/phone/:phoneNumber', function () {
         it('should retrieve all the alerts from the db for a particular number', function () {
             let resAlert;
             return Alert
                 .findOne()
                 .then(function (res) {
                     resAlert = res;
-                    return chai.request(app).get(`/api/alerts/${resAlert.phoneNumber}`);
+                    return chai.request(app).get(`/api/alerts/phone/${resAlert.phoneNumber}`);
                 })
                 .then(function (res) {
                     res.should.have.status(200);
@@ -67,7 +69,27 @@ describe('Testing /api/alerts', function () {
                     res.body.should.be.a('array');
                     res.body.forEach(function (alert) {
                         alert.should.be.a('object');
-                        alert.should.include.keys('phoneNumber', 'alert');
+                        alert.should.include.keys('phoneNumber', 'id', 'email', 'alert');
+                        alert.alert.should.be.a('object');
+                        alert.alert.should.include.keys('price', 'contactType', 'created', 'removeFlag');
+                    });
+                });
+        });
+        it('should retrieve all the alerts from the db for a particular email', function () {
+            let resAlert;
+            return Alert
+                .findOne()
+                .then(function (res) {
+                    resAlert = res;
+                    return chai.request(app).get(`/api/alerts/email/${resAlert.email}`);
+                })
+                .then(function (res) {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.should.be.a('array');
+                    res.body.forEach(function (alert) {
+                        alert.should.be.a('object');
+                        alert.should.include.keys('phoneNumber', 'id', 'email', 'alert');
                         alert.alert.should.be.a('object');
                         alert.alert.should.include.keys('price', 'created', 'removeFlag');
                     });
@@ -85,13 +107,14 @@ describe('Testing /api/alerts', function () {
                 res.should.have.status(201);
                 res.should.be.json;
                 res.body.should.be.a('object');
-                res.body.should.include.keys('phoneNumber', 'alert');
-                res.body.alert.should.include.keys('price', 'removeFlag', 'created');
+                res.body.should.include.keys('phoneNumber', 'email', 'alert');
+                res.body.alert.should.include.keys('price', 'contactType', 'removeFlag', 'created');
                 res.body.id.should.not.be.null;
                 return Alert.findById(res.body.id);
             })
             .then(function (alert) {
                 alert.phoneNumber.should.equal(newAlert.phoneNumber);
+                alert.email.should.equal(newAlert.email);
             });
         });
     });

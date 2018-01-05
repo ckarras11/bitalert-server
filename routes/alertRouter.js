@@ -8,7 +8,7 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false });
 const jsonParser = bodyParser.json();
 
 // Get Alerts by phone Number
-router.get('/:phoneNumber', (req, res) => {
+router.get('/phone/:phoneNumber', (req, res) => {
     const number = req.params.phoneNumber.replace(/\D/g, '');
     console.log(number);
     return Alert
@@ -21,10 +21,27 @@ router.get('/:phoneNumber', (req, res) => {
             res.status(500).json({ error: 'Something went wrong' });
         });
 });
+
+// Get Alerts by email
+router.get('/email/:email', (req, res) => {
+    const email = req.params.email;
+    console.log('getting email')
+    console.log(email);
+    return Alert
+        .find({ email })
+        .then((alerts) => {
+            res.status(200).json(alerts.map(alert => alert.apiRepr()));
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).json({ error: 'Something went wrong' });
+        });
+});
+
 // Create a new Alert
 router.post('/', jsonParser, (req, res) => {
-    if (!req.body.hasOwnProperty('phoneNumber')) {
-        let message = 'Missing phoneNumber in request body';
+    if (!req.body.hasOwnProperty('phoneNumber') && !req.body.hasOwnProperty('email')) {
+        let message = 'Missing phoneNumber or email in request body';
         console.error(message);
         return res.status(400).send(message);
     }
@@ -40,12 +57,19 @@ router.post('/', jsonParser, (req, res) => {
         console.error(message);
         return res.status(400).send(message);
     }
+    if (!alert.hasOwnProperty('contactType')) {
+        let message = 'Missing key in alert body';
+        console.error(message);
+        return res.status(400).send(message);
+    }
 
     return Alert
         .create({
             phoneNumber: req.body.phoneNumber,
+            email: req.body.email,
             alert: {
                 price: req.body.alert.price,
+                contactType: req.body.alert.contactType,
                 removeFlag: false,
                 created: new Date(),
             },
