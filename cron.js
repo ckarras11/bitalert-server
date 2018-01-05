@@ -1,6 +1,7 @@
 const CronJob = require('cron').CronJob;
 const request = require('request');
 const mongoose = require('mongoose');
+const nodemailer = require('nodemailer');
 const { Price } = require('./models/price');
 const { Alert } = require('./models/alert');
 const { DATABASE_URL, ACCOUNT_SID, AUTH_TOKEN } = require('./config');
@@ -14,6 +15,15 @@ const twilio = require('twilio');
 const accountSid = ACCOUNT_SID;
 const authToken = AUTH_TOKEN;
 const client = new twilio(accountSid, authToken);
+
+// Nodemailer
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'bitalert.notifications@gmail.com',
+        pass: 'bitalertapp',
+    },
+});
 
 // Fill the database with current market prices every minute
 const job1 = new CronJob({
@@ -76,11 +86,11 @@ const job3 = new CronJob({
                     if (currentDate - alert.alert.created > expiration) {
                         console.log(`${alert} is older than 24 hours`);
                         return Alert
-                        .update({ _id: alert._id }, { $set: { 'alert.removeFlag': true } })
-                        .exec()
-                        .then(() => {
-                            console.log('Alerts older than 24 hours flagged for deletion');
-                        });
+                            .update({ _id: alert._id }, { $set: { 'alert.removeFlag': true } })
+                            .exec()
+                            .then(() => {
+                                console.log('Alerts older than 24 hours flagged for deletion');
+                            });
                     }
                 });
             });
@@ -96,32 +106,59 @@ const job4 = new CronJob({
         Price
             .find()
             .then((res) => {
+                res.sort(function (a, b) {
+                    return new Date(a.timestamp) - new Date(b.timestamp);
+                });
                 marketPrice = res[res.length - 1].price;
                 console.log(marketPrice);
             })
             .then(() => {
                 Alert
-                .findByFlag(false)
-                .then((res) => {
-                    res.forEach((alert) => {
-                        if (alert.alert.price > marketPrice) {
-                            console.log(alert);
-                            // SMS via Twilio
-                            client.messages.create({
-                                body: `BitAlert - Your alert price of ${alert.alert.price} was triggered!`,
-                                to: alert.phoneNumber, // Text this number
-                                from: '+17742373189', // From a valid Twilio number
-                            })
-                            .then(message => console.log(message.sid));
-                            return Alert
-                                .update({ _id: alert._id }, { $set: { 'alert.removeFlag': true } })
-                                .exec()
-                                .then(() => {
-                                    console.log('Triggered alerts flagged for deletion');
-                                });
-                        }
+                    .findByFlag(false)
+                    .then((res) => {
+                        res.forEach((alert) => {
+                            if (alert.alert.price > marketPrice) {
+                                if (alert.alert.contactType === 'phoneNumber') {
+                                    console.log(alert, 'SMS TEXT');
+                                    // SMS via Twilio
+                                    client.messages.create({
+                                        body: `BitAlert - Your alert price of ${alert.alert.price} was triggered!`,
+                                        to: alert.phoneNumber, // Text this number
+                                        from: '+17742373189', // From a valid Twilio number
+                                    })
+                                    .then(message => console.log(message.sid));
+                                } else if (alert.alert.contactType === 'email') {
+                                    console.log(alert, 'email');
+                                    const mailOptions = {
+                                        from: 'bitalert.notifications@gmail.com', // sender address
+                                        to: alert.email, // list of receivers
+                                        subject: 'BitAlert Notification', // Subject line
+                                        html: ` <img src='cid:unique@kreata.ee'>
+                                                <h2>Your price alert of $${alert.alert.price} was triggered</h2>
+                                                <a href='https://bitalert.netlify.com/'>Create more notifications here!</a>`,
+                                        attachments: [{
+                                            filename: '34591541-5d14a7e8-f18c-11e7-8f11-6084ffc60658.png',
+                                            path: 'https://user-images.githubusercontent.com/30561347/34591541-5d14a7e8-f18c-11e7-8f11-6084ffc60658.png',
+                                            cid: 'unique@kreata.ee', // same cid value as in the html img src
+                                        }], // plain text body
+                                    };
+                                    transporter.sendMail(mailOptions, function (err, info) {
+                                        if (err) {
+                                            console.log(err);
+                                        } else {
+                                            console.log(info);
+                                        }
+                                    });
+                                }
+                                return Alert
+                                    .update({ _id: alert._id }, { $set: { 'alert.removeFlag': true } })
+                                    .exec()
+                                    .then(() => {
+                                        console.log('Triggered alerts flagged for deletion');
+                                    });
+                            }
+                        });
                     });
-                });
             });
     },
     start: false,
